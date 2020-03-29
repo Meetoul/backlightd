@@ -1,0 +1,35 @@
+#!/bin/sh
+
+PERSIST_DIR=/var/lib/backlightd
+BACKLIGHT_DIR=/sys/class/backlight/intel_backlight
+CURRENT_BRIGHTNESS_FILE_NAME=brightness
+
+PERSIST_BRIGHTNESS_FILE=${PERSIST_DIR}/${CURRENT_BRIGHTNESS_FILE_NAME}
+CURRENT_BRIGHTNESS_FILE=${BACKLIGHT_DIR}/${CURRENT_BRIGHTNESS_FILE_NAME}
+
+restore_backlight() {
+    echo "Restoring backlight level..."
+
+    if test -f ${PERSIST_BRIGHTNESS_FILE}; then
+        cat ${PERSIST_BRIGHTNESS_FILE} > ${CURRENT_BRIGHTNESS_FILE}
+    else
+        echo "Persist backlight level file does not exist!"
+    fi
+}
+
+save_backlight() {
+    echo "Saving backlight level..."
+
+    if test -f ${CURRENT_BRIGHTNESS_FILE}; then
+        mkdir -p  ${PERSIST_DIR}
+        cat ${CURRENT_BRIGHTNESS_FILE} > ${PERSIST_BRIGHTNESS_FILE}
+    else
+        echo "Current backlight level file does not exist!"
+    fi
+}
+
+trap save_backlight TERM INT
+
+restore_backlight
+
+sleep infinity
