@@ -28,8 +28,9 @@ save_backlight() {
     fi
 }
 
-trap save_backlight TERM INT
+trap save_backlight TERM
 
 restore_backlight
 
-sleep infinity
+sleep infinity &
+wait $!
